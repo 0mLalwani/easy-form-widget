@@ -1,5 +1,20 @@
-import { useEffect, type ChangeEvent } from "react";
+import { useMemo, type ChangeEvent } from "react";
 import type { Field } from "../utils/types";
+
+//generic debouncing wrapper fn
+function debouncer<T extends (...args: any[]) => void>(
+  callback: T,
+  ms: number,
+) {
+  //init a timerID variable, stays alive due to closure of the fn returned below
+  let timerID: number;
+
+  //return a function that clears old setTimeout and reassigns a new one
+  return (...args: Parameters<T>) => {
+    clearTimeout(timerID);
+    timerID = setTimeout(() => callback(...args), ms);
+  };
+}
 
 function FormField(props: {
   field: Field;
@@ -8,19 +23,26 @@ function FormField(props: {
   value: string | boolean;
   errors: string[];
 }) {
+  const debouncedValidate = useMemo(
+    () => debouncer(props.validateFn, 600),
+    [props.validateFn],
+  );
+
+  //expensive change setting functions, need to be debounced?
   const handleCheckChange = (event: ChangeEvent<HTMLInputElement>) => {
     props.updateFn(event.target.name, event.target.checked);
   };
-
   const handleInputChange = (
     event: ChangeEvent<
       HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
     >,
   ) => {
     props.updateFn(event.target.name, event.target.value);
-    props.validateFn(props.field, event.target.value);
+    //pass the args to the returned fn
+    debouncedValidate(props.field, event.target.value);
   };
 
+  //simply shows errors of each input's errors (string[])
   const handleBlurChange = (
     event: React.FocusEvent<
       HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
@@ -56,7 +78,6 @@ function FormField(props: {
           ))}
         </div>
       )}
-
       {/* option consuming */}
       {props.field.type == "select" && (
         <div>
@@ -104,7 +125,6 @@ function FormField(props: {
             </div>
           );
         })}
-
       {/* other type */}
       {props.field.type == "checkbox" && (
         <div>
