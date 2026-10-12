@@ -1,7 +1,6 @@
 type Rules = {
   required?: boolean;
 };
-
 type TextRules = Rules & {
   minLength?: number;
   maxLength?: number;
@@ -25,7 +24,6 @@ type NumberField = {
   label: string;
   rules: NumberRules;
 };
-
 type SelectField = {
   type: "select";
   name: string;
@@ -36,7 +34,6 @@ type SelectField = {
   }[];
   rules: Rules;
 };
-
 type RadioField = {
   type: "radio";
   name: string;
@@ -46,7 +43,6 @@ type RadioField = {
   }[];
   rules: Rules;
 };
-
 //other input types
 type CheckboxField = {
   type: "checkbox";
@@ -60,7 +56,6 @@ type TextareaField = {
   label: string;
   rules: TextRules;
 };
-
 //final combination
 export type Field =
   | TextField
@@ -69,3 +64,16 @@ export type Field =
   | RadioField
   | CheckboxField
   | TextareaField;
+
+export type formProps = {
+  fields: Field[];
+  submit_button: {
+    handleSubmit: (
+      //get formdata or errdata
+      data?: Record<string, string | boolean> | Record<string, string[]>,
+      errs?: string,
+    ) => void;
+    label: string;
+    labelWhileSubmit: string;
+  };
+};

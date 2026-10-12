@@ -1,5 +1,6 @@
-import type { formProps } from "../components/EasyFormWidget";
+import type { formProps } from "./types";
 
+//whole object goes to easy form widget
 let form: formProps = {
   fields: [
     // Text validation
@@ -144,11 +145,15 @@ let form: formProps = {
     },
   ],
   submit_button: {
-    label: "Submit Me",
-  },
-  handleSubmit: (e) => {
-    e.preventDefault();
-    console.log("woah");
+    handleSubmit: (data, errs) => {
+      if (errs) {
+        console.log(data, errs);
+        return;
+      }
+      console.log(data);
+    },
+    label: "Submit",
+    labelWhileSubmit: "Ok submitting...",
   },
 };
 export default form;
