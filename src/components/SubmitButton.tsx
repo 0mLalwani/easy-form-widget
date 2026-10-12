@@ -1,11 +1,20 @@
-export type submit_button = {
-  label: string;
-  labelWhileSubmit?: string;
-};
+import { useState } from "react";
 
-function SubmitButton(props: { fields: submit_button }) {
-  //gotta show submitting state and set disabled too but need form context for that
-  return <button type="submit">{props.fields.label}</button>;
+// DO NOT MOVE THIS TYPE UP, this guy isnt getting the handle submit, its being passed specific data from the original object via props
+type submit_button = {
+  isSubmitting: boolean;
+  label: string;
+  submittingLabel: string;
+};
+function SubmitButton({ isSubmitting, label, submittingLabel }: submit_button) {
+  return (
+    <button
+      className="text-lg font-bold text-zinc-300 px-8 py-4 border-2 border-zinc-300 hover:bg-zinc-800 hover:animate-spin rounded-sm"
+      type="submit"
+    >
+      {isSubmitting ? submittingLabel : label}
+    </button>
+  );
 }
 
 export default SubmitButton;

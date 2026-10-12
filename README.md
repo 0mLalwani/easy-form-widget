@@ -1,8 +1,9 @@
 TODO:
 
+- fix validation on date, select, checkbox
 - split and clean up code in fieldrenderer.tsx
-- add debounce to input onchange
-- add submit functionality (w/ throttle & isSubmitting)
+- ~add debounce to input onchange~
+- ~add submit functionality (w/ throttle & isSubmitting)~
 - add theming functionality
 - add animation & final polishes
 

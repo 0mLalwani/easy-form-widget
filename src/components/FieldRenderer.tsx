@@ -1,20 +1,6 @@
 import { useMemo, type ChangeEvent } from "react";
 import type { Field } from "../utils/types";
-
-//generic debouncing wrapper fn
-function debouncer<T extends (...args: any[]) => void>(
-  callback: T,
-  ms: number,
-) {
-  //init a timerID variable, stays alive due to closure of the fn returned below
-  let timerID: number;
-
-  //return a function that clears old setTimeout and reassigns a new one
-  return (...args: Parameters<T>) => {
-    clearTimeout(timerID);
-    timerID = setTimeout(() => callback(...args), ms);
-  };
-}
+import { debouncer } from "../utils/debouncer";
 
 function FormField(props: {
   field: Field;
@@ -23,12 +9,13 @@ function FormField(props: {
   value: string | boolean;
   errors: string[];
 }) {
+  //use memo to make a single ref survive rerenders
   const debouncedValidate = useMemo(
     () => debouncer(props.validateFn, 600),
     [props.validateFn],
   );
 
-  //expensive change setting functions, need to be debounced?
+  //expensive change setting functions, be debounced
   const handleCheckChange = (event: ChangeEvent<HTMLInputElement>) => {
     props.updateFn(event.target.name, event.target.checked);
   };
@@ -62,9 +49,13 @@ function FormField(props: {
         props.field.type == "url" ||
         props.field.type == "tel" ||
         props.field.type == "date") && (
-        <div>
-          <label htmlFor={props.field.name}>{props.field.label}</label>
+        <div className="flex flex-col items-start text-zinc-300 gap-2">
+          <label htmlFor={props.field.name} className="flex gap-1">
+            {props.field.label}
+            {props.field.rules.required && <p className="text-red-400">*</p>}
+          </label>
           <input
+            className={`${props.errors.length > 0 ? " border-red-400" : "border-zinc-600"} border rounded-sm focus:ring-0 focus:outline-none p-2 w-120`}
             id={props.field.name}
             type={props.field.type}
             name={props.field.name}
@@ -74,18 +65,21 @@ function FormField(props: {
             {...props.field.rules}
           />
           {props.errors.map((err) => (
-            <div key={err}>{err}</div>
+            <div className="text-red-400 text-xs" key={err}>
+              {err}
+            </div>
           ))}
         </div>
       )}
       {/* option consuming */}
       {props.field.type == "select" && (
-        <div>
-          <label htmlFor={props.field.name}>
-            {props.field.rules.required && <p className="text-red-700">*</p>}
+        <div className="flex flex-col items-start text-zinc-300 gap-2">
+          <label htmlFor={props.field.name} className="flex gap-1">
             {props.field.label}
+            {props.field.rules.required && <p className="text-red-400">*</p>}
           </label>
           <select
+            className={`${props.errors.length > 0 ? " border-red-400" : "border-zinc-600"} border rounded-sm focus:ring-0 focus:outline-none p-2 w-120`}
             onChange={handleInputChange}
             id={props.field.name}
             name={props.field.name}
@@ -101,15 +95,20 @@ function FormField(props: {
             })}
           </select>
           {props.errors.map((err) => (
-            <div key={err}>{err}</div>
+            <div className="text-red-400 text-xs" key={err}>
+              {err}
+            </div>
           ))}
         </div>
       )}
       {props.field.type == "radio" &&
         props.field.options.map((optn) => {
           return (
-            <div key={optn.radio_value}>
-              <label>
+            <div
+              key={optn.radio_value}
+              className="flex flex-col items-start text-zinc-300 gap-2"
+            >
+              <label className="flex gap-1">
                 <input
                   value={optn.radio_value}
                   type={props.field.type}
@@ -127,9 +126,13 @@ function FormField(props: {
         })}
       {/* other type */}
       {props.field.type == "checkbox" && (
-        <div>
-          <label htmlFor={props.field.name}>{props.field.label}</label>
+        <div className="flex flex-col items-start text-zinc-300 gap-2">
+          <label htmlFor={props.field.name} className="flex gap-1">
+            {props.field.label}
+            {props.field.rules.required && <p className="text-red-400">*</p>}
+          </label>
           <input
+            className={`${props.errors.length > 0 ? " border-red-400" : "border-zinc-600"} border rounded-sm focus:ring-0 focus:outline-none p-2 w-120`}
             id={props.field.name}
             type={props.field.type}
             name={props.field.name}
@@ -137,27 +140,30 @@ function FormField(props: {
             {...props.field.rules}
           />
           {props.errors.map((err) => (
-            <div key={err}>{err}</div>
+            <div className="text-red-400 text-xs" key={err}>
+              {err}
+            </div>
           ))}
         </div>
       )}
       {props.field.type == "textarea" && (
-        <div>
-          <label htmlFor={props.field.name}>{props.field.label}</label>
+        <div className="flex flex-col items-start text-zinc-300 gap-2">
+          <label htmlFor={props.field.name} className="flex gap-1">
+            {props.field.label}
+            {props.field.rules.required && <p className="text-red-400">*</p>}
+          </label>
           <textarea
+            className={`${props.errors.length > 0 ? " border-red-400" : "border-zinc-600"} border rounded-sm focus:ring-0 focus:outline-none p-2 w-120 resize-none`}
             onChange={handleInputChange}
             id={props.field.name}
             name={props.field.name}
             value={props.value as string}
             {...props.field.rules}
-            className={`border focus:outline-none focus:ring-2 ${
-              props.errors.length > 0
-                ? "border-red-500 focus:ring-red-200"
-                : "border-green-500 focus:ring-green-200"
-            }`}
           />
           {props.errors.map((err) => (
-            <div key={err}>{err}</div>
+            <div className="text-red-400 text-xs" key={err}>
+              {err}
+            </div>
           ))}
         </div>
       )}

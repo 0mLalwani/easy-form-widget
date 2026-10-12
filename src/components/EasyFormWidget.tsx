@@ -1,15 +1,11 @@
-import { useEffect, useState, type SubmitEventHandler } from "react";
-import type { Field } from "../utils/types";
+import { useEffect, useState } from "react";
+import type { Field, formProps } from "../utils/types";
 import FormField from "./FieldRenderer";
-import SubmitButton, { type submit_button } from "./SubmitButton";
-
-export type formProps = {
-  fields: Field[];
-  submit_button: submit_button;
-  handleSubmit: SubmitEventHandler;
-};
+import SubmitButton from "./SubmitButton";
 
 function EasyForm({ form }: { form: formProps }) {
+  let [isSubmitting, setIsSubmitting] = useState(false);
+
   //set initial form & errors object
   const initialForm: Record<string, string | boolean> = Object.fromEntries(
     form.fields.map((singular_field) => {
@@ -42,11 +38,11 @@ function EasyForm({ form }: { form: formProps }) {
     value: string | number | boolean,
     fieldValue: string | boolean | number,
   ) => {
-    if (rule == "required") {
-      if (fieldValue == "") {
-        return "Hey this is required.";
-      }
-    }
+    // if (rule == "required") {
+    //   if (fieldValue == "") {
+    //     return "Hey this is required.";
+    //   }
+    // }
     if (rule == "minLength") {
       if (String(fieldValue).length < Number(value)) {
         return `Minimum required character length is ${value}, you have entered ${String(fieldValue).length}`;
@@ -73,6 +69,7 @@ function EasyForm({ form }: { form: formProps }) {
       }
     }
   };
+  //this is built for 1 field at a time
   const validateFields = (field: Field, fieldValue: string | boolean) => {
     const fieldErrors: string[] = [];
 
@@ -87,12 +84,44 @@ function EasyForm({ form }: { form: formProps }) {
       ...prev,
       [field.name]: fieldErrors,
     }));
+    //works and returns only 1 field's errors
+    return fieldErrors;
   };
+
+  const handleSubmitClick = (event: React.SubmitEvent) => {
+    event.preventDefault();
+
+    setIsSubmitting(true);
+    const newErrors: Record<string, string[]> = {};
+
+    for (const field of form.fields) {
+      newErrors[field.name] = validateFields(field, formData[field.name]);
+    }
+
+    const hasErrors = Object.values(newErrors).some(
+      (errors) => errors.length > 0,
+    );
+
+    if (hasErrors) {
+      form.submit_button.handleSubmit(
+        errorData,
+        `we still got some errors there buddy`,
+      );
+    } else {
+      form.submit_button.handleSubmit(formData);
+    }
+    setIsSubmitting(false);
+  };
+
   //TEST to print on console
   useEffect(() => console.log(formData, errorData), [formData]);
 
   return (
-    <form onSubmit={form.handleSubmit}>
+    <form
+      className="bg-zinc-700 flex flex-col items-center gap-2"
+      onSubmit={handleSubmitClick}
+      noValidate
+    >
       {form.fields.map((singular_field) => {
         return (
           <FormField
@@ -105,7 +134,11 @@ function EasyForm({ form }: { form: formProps }) {
           />
         );
       })}
-      <SubmitButton fields={form.submit_button} />
+      <SubmitButton
+        isSubmitting={isSubmitting}
+        label={form.submit_button.label}
+        submittingLabel={form.submit_button.labelWhileSubmit}
+      />
     </form>
   );
 }
