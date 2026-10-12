@@ -9,7 +9,7 @@ type submit_button = {
 function SubmitButton({ isSubmitting, label, submittingLabel }: submit_button) {
   return (
     <button
-      className="text-lg font-bold text-zinc-300 px-8 py-4 border-2 border-zinc-300 hover:bg-zinc-800 hover:animate-spin rounded-sm"
+      className="rounded-sm border-2 border-zinc-300 px-8 py-4 text-lg font-bold text-zinc-300 hover:animate-spin hover:bg-zinc-800"
       type="submit"
     >
       {isSubmitting ? submittingLabel : label}

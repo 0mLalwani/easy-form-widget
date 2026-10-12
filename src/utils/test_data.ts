@@ -55,6 +55,7 @@ let form: formProps = {
       type: "url",
       rules: {
         required: false,
+        minLength: 5,
       },
     },
 

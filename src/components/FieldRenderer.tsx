@@ -49,23 +49,26 @@ function FormField(props: {
         props.field.type == "url" ||
         props.field.type == "tel" ||
         props.field.type == "date") && (
-        <div className="flex flex-col items-start text-zinc-300 gap-2">
-          <label htmlFor={props.field.name} className="flex gap-1">
+        <div className="flex flex-col items-start gap-2 text-zinc-300">
+          <label
+            htmlFor={props.field.name}
+            className="flex gap-1 font-semibold"
+          >
             {props.field.label}
             {props.field.rules.required && <p className="text-red-400">*</p>}
           </label>
           <input
-            className={`${props.errors.length > 0 ? " border-red-400" : "border-zinc-600"} border rounded-sm focus:ring-0 focus:outline-none p-2 w-120`}
+            className={`${props.errors.length > 0 ? "border-red-400" : "border-zinc-600"} w-120 rounded-sm border p-2 focus:ring-0 focus:outline-none`}
             id={props.field.name}
             type={props.field.type}
             name={props.field.name}
             onChange={handleInputChange}
             onBlur={handleBlurChange}
-            value={props.value as string}
+            value={String(props.value)}
             {...props.field.rules}
           />
           {props.errors.map((err) => (
-            <div className="text-red-400 text-xs" key={err}>
+            <div className="text-xs text-red-400" key={err}>
               {err}
             </div>
           ))}
@@ -73,17 +76,20 @@ function FormField(props: {
       )}
       {/* option consuming */}
       {props.field.type == "select" && (
-        <div className="flex flex-col items-start text-zinc-300 gap-2">
-          <label htmlFor={props.field.name} className="flex gap-1">
+        <div className="flex flex-col items-start gap-2 text-zinc-300">
+          <label
+            htmlFor={props.field.name}
+            className="flex gap-1 font-semibold"
+          >
             {props.field.label}
             {props.field.rules.required && <p className="text-red-400">*</p>}
           </label>
           <select
-            className={`${props.errors.length > 0 ? " border-red-400" : "border-zinc-600"} border rounded-sm focus:ring-0 focus:outline-none p-2 w-120`}
+            className={`${props.errors.length > 0 ? "border-red-400" : "border-zinc-600"} w-120 rounded-sm border p-2 focus:ring-0 focus:outline-none`}
             onChange={handleInputChange}
             id={props.field.name}
             name={props.field.name}
-            value={props.value as string}
+            value={String(props.value)}
             {...props.field.rules}
           >
             {props.field.options.map((optn) => {
@@ -95,7 +101,7 @@ function FormField(props: {
             })}
           </select>
           {props.errors.map((err) => (
-            <div className="text-red-400 text-xs" key={err}>
+            <div className="text-xs text-red-400" key={err}>
               {err}
             </div>
           ))}
@@ -106,9 +112,9 @@ function FormField(props: {
           return (
             <div
               key={optn.radio_value}
-              className="flex flex-col items-start text-zinc-300 gap-2"
+              className="flex flex-col items-start gap-2 text-zinc-300"
             >
-              <label className="flex gap-1">
+              <label className="flex gap-1 font-semibold">
                 <input
                   value={optn.radio_value}
                   type={props.field.type}
@@ -119,20 +125,25 @@ function FormField(props: {
                 {optn.radio_label}
               </label>
               {props.errors.map((err) => (
-                <div key={err}>{err}</div>
+                <div className="text-xs text-red-400" key={err}>
+                  {err}
+                </div>
               ))}
             </div>
           );
         })}
       {/* other type */}
       {props.field.type == "checkbox" && (
-        <div className="flex flex-col items-start text-zinc-300 gap-2">
-          <label htmlFor={props.field.name} className="flex gap-1">
+        <div className="flex flex-col items-start gap-2 text-zinc-300">
+          <label
+            htmlFor={props.field.name}
+            className="flex gap-1 font-semibold"
+          >
             {props.field.label}
             {props.field.rules.required && <p className="text-red-400">*</p>}
           </label>
           <input
-            className={`${props.errors.length > 0 ? " border-red-400" : "border-zinc-600"} border rounded-sm focus:ring-0 focus:outline-none p-2 w-120`}
+            className={`${props.errors.length > 0 ? "border-red-400" : "border-zinc-600"} w-120 rounded-sm border p-2 focus:ring-0 focus:outline-none`}
             id={props.field.name}
             type={props.field.type}
             name={props.field.name}
@@ -140,28 +151,31 @@ function FormField(props: {
             {...props.field.rules}
           />
           {props.errors.map((err) => (
-            <div className="text-red-400 text-xs" key={err}>
+            <div className="text-xs text-red-400" key={err}>
               {err}
             </div>
           ))}
         </div>
       )}
       {props.field.type == "textarea" && (
-        <div className="flex flex-col items-start text-zinc-300 gap-2">
-          <label htmlFor={props.field.name} className="flex gap-1">
+        <div className="flex flex-col items-start gap-2 text-zinc-300">
+          <label
+            htmlFor={props.field.name}
+            className="flex gap-1 font-semibold"
+          >
             {props.field.label}
             {props.field.rules.required && <p className="text-red-400">*</p>}
           </label>
           <textarea
-            className={`${props.errors.length > 0 ? " border-red-400" : "border-zinc-600"} border rounded-sm focus:ring-0 focus:outline-none p-2 w-120 resize-none`}
+            className={`${props.errors.length > 0 ? "border-red-400" : "border-zinc-600"} w-120 resize-none rounded-sm border p-2 focus:ring-0 focus:outline-none`}
             onChange={handleInputChange}
             id={props.field.name}
             name={props.field.name}
-            value={props.value as string}
+            value={String(props.value)}
             {...props.field.rules}
           />
           {props.errors.map((err) => (
-            <div className="text-red-400 text-xs" key={err}>
+            <div className="text-xs text-red-400" key={err}>
               {err}
             </div>
           ))}

@@ -32,17 +32,25 @@ function EasyForm({ form }: { form: formProps }) {
       [name]: value,
     }));
   };
-
+  // main core part of validation engine
   const getErrors = (
     rule: string,
     value: string | number | boolean,
     fieldValue: string | boolean | number,
+    fieldType: Field["type"],
   ) => {
-    // if (rule == "required") {
-    //   if (fieldValue == "") {
-    //     return "Hey this is required.";
-    //   }
-    // }
+    if (rule == "required" && value == true) {
+      //gotta handle the boolean check and other strings check seperately
+      if (fieldType === "checkbox" && fieldValue !== true) {
+        return "Hey you have to check this.";
+      }
+      if (fieldType !== "checkbox" && fieldValue === "") {
+        return "Hey this is required.";
+      }
+    }
+    if (fieldValue === "" && rule !== "required") {
+      return;
+    }
     if (rule == "minLength") {
       if (String(fieldValue).length < Number(value)) {
         return `Minimum required character length is ${value}, you have entered ${String(fieldValue).length}`;
@@ -74,7 +82,7 @@ function EasyForm({ form }: { form: formProps }) {
     const fieldErrors: string[] = [];
 
     for (const [rule, value] of Object.entries(field.rules)) {
-      const err = getErrors(rule, value, fieldValue);
+      const err = getErrors(rule, value, fieldValue, field.type);
 
       if (err !== undefined) {
         fieldErrors.push(err);
@@ -92,6 +100,7 @@ function EasyForm({ form }: { form: formProps }) {
     event.preventDefault();
 
     setIsSubmitting(true);
+    //building up errors to submit
     const newErrors: Record<string, string[]> = {};
 
     for (const field of form.fields) {
@@ -104,7 +113,7 @@ function EasyForm({ form }: { form: formProps }) {
 
     if (hasErrors) {
       form.submit_button.handleSubmit(
-        errorData,
+        newErrors,
         `we still got some errors there buddy`,
       );
     } else {
@@ -118,7 +127,7 @@ function EasyForm({ form }: { form: formProps }) {
 
   return (
     <form
-      className="bg-zinc-700 flex flex-col items-center gap-2"
+      className="flex flex-col items-center gap-2 bg-zinc-700"
       onSubmit={handleSubmitClick}
       noValidate
     >
