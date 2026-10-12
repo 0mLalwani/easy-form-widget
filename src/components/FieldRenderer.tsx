@@ -30,11 +30,7 @@ function FormField(props: {
   };
 
   //simply shows errors of each input's errors (string[])
-  const handleBlurChange = (
-    event: React.FocusEvent<
-      HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
-    >,
-  ) => {
+  const handleBlurChange = () => {
     if (!(props.errors.length == 0)) {
       console.log(props.errors);
     }
