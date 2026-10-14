@@ -1,4 +1,3 @@
-import "./style.css";
 export { default as EasyFormWidget } from "./components/EasyFormWidget";
 
-export type { Field, formProps } from "./utils/types";
+export type { formProps } from "./utils/types";

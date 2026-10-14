@@ -1,7 +1,8 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import type { Field, formProps } from "../utils/types";
 import FormField from "./FieldRenderer";
 import SubmitButton from "./SubmitButton";
+import { throttler } from "../utils/throttle";
 
 function EasyForm({ form }: { form: formProps }) {
   let [isSubmitting, setIsSubmitting] = useState(false);
@@ -96,9 +97,8 @@ function EasyForm({ form }: { form: formProps }) {
     return fieldErrors;
   };
 
-  const handleSubmitClick = (event: React.SubmitEvent) => {
-    event.preventDefault();
-
+  //goes as cb to throttleFn's saved memo down below, and keeps a single fn call ref alive as long as formData is same, else we call this fn again
+  const handleSubmitClick = useCallback(() => {
     setIsSubmitting(true);
     //building up errors to submit
     const newErrors: Record<string, string[]> = {};
@@ -120,15 +120,26 @@ function EasyForm({ form }: { form: formProps }) {
       form.submit_button.handleSubmit(formData);
     }
     setIsSubmitting(false);
-  };
+  }, [formData]);
 
+  //dont ever call throttler() fn again, just memoize it's return'ed isWaiting stuff
+  const throttledSubmit = useMemo(
+    () => throttler(handleSubmitClick, 1000),
+    [handleSubmitClick],
+  );
+
+  //firstly, Prevent page refresh
+  const handleFormSubmit = (event: React.SubmitEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    throttledSubmit();
+  };
   //TEST to print on console
   useEffect(() => console.log(formData, errorData), [formData]);
 
   return (
     <form
       className="flex flex-col items-center gap-2 bg-zinc-700"
-      onSubmit={handleSubmitClick}
+      onSubmit={handleFormSubmit}
       noValidate
     >
       {form.fields.map((singular_field) => {
